@@ -1,0 +1,13 @@
+[run]
+source =
+    .
+
+omit =
+    **/env/*
+    **/*_init_*
+    **/*_pycache_*
+    **/tests/*
+    **/src/config/*
+    **/src/constants/*
+    **/src/infrastructure/api/*
+    **/src/shared/*
