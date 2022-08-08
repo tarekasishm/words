@@ -6,9 +6,8 @@ from src.shared.settings import Settings
 settings: Dict[str, Any] = Settings().dict()
 
 mongo_client: AsyncIOMotorClient = AsyncIOMotorClient(
-    host=settings["mongo_host"],
-    port=settings["mongo_port"],
-    user=settings["mongo_user"],
+    host=settings["mongo_uri"],
+    username=settings["mongo_user"],
     password=settings["mongo_pass"],
 )
 

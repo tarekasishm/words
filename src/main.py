@@ -1,7 +1,7 @@
 from typing import Any, Dict, Final, List
 from fastapi import FastAPI, APIRouter
 
-from health_check.infrastructure.api_controllers import health_checks
+from src.health_check.infrastructure.api_controllers import health_checks
 
 API_V: Final[str] = "/api/v1"
 tags_metadata: List[Dict[str, Any]] = [
