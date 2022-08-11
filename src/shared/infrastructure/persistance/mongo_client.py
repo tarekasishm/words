@@ -1,4 +1,6 @@
-from typing import Any, AsyncGenerator, Dict
+from typing import Any, AsyncGenerator, Dict, Optional
+
+from fastapi import HTTPException
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorClientSession
 
 from src.shared.settings import Settings
@@ -14,7 +16,11 @@ mongo_client: AsyncIOMotorClient = AsyncIOMotorClient(
 
 async def get_mongo_client() -> AsyncGenerator[AsyncIOMotorClientSession, None]:
     try:
-        db_session: AsyncIOMotorClientSession = await mongo_client.start_session()
+        db_session: Optional[AsyncIOMotorClientSession] = await mongo_client.start_session()
         yield db_session
+    except:
+        db_session = None
+        raise HTTPException(503, detail="Service not available, please try later.")
     finally:
-        db_session.end_session()
+        if db_session:
+            await db_session.end_session()
