@@ -2,6 +2,7 @@ from typing import Any, Dict, Final, List
 from fastapi import FastAPI, APIRouter
 
 from src.health_check.infrastructure.api_controllers import health_checks
+from src.word.infrastructure.api_controllers import words
 
 API_V: Final[str] = "/api/v1"
 tags_metadata: List[Dict[str, Any]] = [
@@ -20,5 +21,6 @@ api_router = APIRouter()
 api_router.include_router(
     health_checks.router, prefix="/health-check", tags=["HealthCheck"]
 )
+api_router.include_router(words.router, prefix="/words", tags=["Words"])
 
 app.include_router(api_router, prefix=API_V)
