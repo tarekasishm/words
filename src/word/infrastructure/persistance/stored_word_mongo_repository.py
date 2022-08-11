@@ -1,11 +1,8 @@
 from typing import Any, Callable, Coroutine, Dict, Optional
 
 from motor.motor_asyncio import AsyncIOMotorClientSession
-from pymongo.results import InsertOneResult
 from pymongo.errors import ConnectionFailure, OperationFailure
 from bson.objectid import ObjectId
-from pymongo.read_concern import ReadConcern
-from pymongo.write_concern import WriteConcern
 
 from src.word.domain.position import Position
 from src.word.domain.stored_word import StoredWord
@@ -15,9 +12,6 @@ from src.word.domain.word import Word
 from src.shared.domain.domain_exceptions import DomainException
 from src.shared.domain.exceptions import DEPENDENCY_PROBLEM
 from src.shared.settings import Settings
-
-
-import asyncio
 
 
 class StoredWordMongoRepository(StoredWordRepository):

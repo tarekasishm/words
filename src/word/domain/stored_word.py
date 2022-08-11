@@ -1,6 +1,5 @@
 from __future__ import annotations
 from pydantic.dataclasses import dataclass
-from collections import Counter
 
 from src.word.domain.position import Position
 from src.word.domain.word import Word

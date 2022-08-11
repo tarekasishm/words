@@ -1,11 +1,10 @@
 from __future__ import annotations
-from typing import Union
 
 from pydantic import validator
 from pydantic.dataclasses import dataclass
 
 from src.shared.domain.domain_exceptions import DomainException
-from src.shared.domain.exceptions import CONFLICT, INVALID_FIELD
+from src.shared.domain.exceptions import INVALID_FIELD
 
 
 @dataclass(frozen=True)

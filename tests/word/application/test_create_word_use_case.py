@@ -1,6 +1,5 @@
 import pytest
 from src.shared.application.application_exceptions import ApplicationException
-from src.shared.domain.domain_exceptions import DomainException
 
 from src.word.application.create_word_use_case import CreateWordUseCase
 from src.word.application.stored_word_dto import StoredWordDto
