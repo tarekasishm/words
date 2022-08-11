@@ -91,6 +91,13 @@ class StoredWordMongoRepository(StoredWordRepository):
         async with self.__session.start_transaction():
             return await self._run_transaction_with_retry(self._save, stored_word)
 
+    async def update(
+        self,
+        stored_word: StoredWord,
+        new_position: Position,
+    ) -> StoredWord:
+        pass
+
     async def _save(
         self,
         stored_word: StoredWord,

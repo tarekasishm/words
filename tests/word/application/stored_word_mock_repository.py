@@ -2,6 +2,7 @@ from typing import Any, Dict, List, Optional
 
 from src.shared.domain.limit import Limit
 from src.shared.domain.offset import Offset
+from src.word.domain.position import Position
 from src.word.domain.stored_word import StoredWord
 from src.word.domain.stored_word_factory import StoredWordFactory
 from src.word.domain.stored_word_repository import StoredWordRepository
@@ -43,3 +44,13 @@ class StoredWordMockRepository(StoredWordRepository):
         stored_word: StoredWord,
     ) -> StoredWord:
         return stored_word
+
+    async def update(
+        self,
+        stored_word: StoredWord,
+        new_position: Position,
+    ) -> StoredWord:
+        return StoredWordFactory.build(
+            stored_word.word,
+            new_position.position,
+        )

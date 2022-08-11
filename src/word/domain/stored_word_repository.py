@@ -3,6 +3,7 @@ from typing import List, Optional
 
 from src.shared.domain.offset import Offset
 from src.shared.domain.limit import Limit
+from src.word.domain.position import Position
 from src.word.domain.word import Word
 from src.word.domain.stored_word import StoredWord
 
@@ -21,6 +22,14 @@ class StoredWordRepository(metaclass=abc.ABCMeta):
         limit: Limit,
         offset: Offset,
     ) -> List[StoredWord]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def update(
+        self,
+        stored_word: StoredWord,
+        new_position: Position,
+    ) -> StoredWord:
         raise NotImplementedError
 
     @abc.abstractmethod
