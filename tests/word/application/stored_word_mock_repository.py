@@ -1,5 +1,7 @@
 from typing import Any, Dict, List, Optional
 
+from src.shared.domain.limit import Limit
+from src.shared.domain.offset import Offset
 from src.word.domain.stored_word import StoredWord
 from src.word.domain.stored_word_factory import StoredWordFactory
 from src.word.domain.stored_word_repository import StoredWordRepository
@@ -21,6 +23,20 @@ class StoredWordMockRepository(StoredWordRepository):
             fake_word[0]["word"], fake_word[0]["position"]
         )
         return stored_word
+
+    async def find_words(
+        self,
+        limit: Limit,
+        offset: Offset,
+    ) -> List[StoredWord]:
+        stored_words: List[StoredWord] = [
+            StoredWordFactory.build(
+                fake_word["word"],
+                fake_word["position"],
+            )
+            for fake_word in fake_words[offset.offset : (offset.offset + limit.limit)]
+        ]
+        return stored_words
 
     async def save(
         self,

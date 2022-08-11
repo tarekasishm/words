@@ -1,9 +1,11 @@
-from typing import Any, Callable, Coroutine, Dict, Optional
+from typing import Any, Callable, Coroutine, Dict, List, Optional
 
 from motor.motor_asyncio import AsyncIOMotorClientSession
 from pymongo.errors import ConnectionFailure, OperationFailure
 from bson.objectid import ObjectId
 
+from src.shared.domain.limit import Limit
+from src.shared.domain.offset import Offset
 from src.word.domain.position import Position
 from src.word.domain.stored_word import StoredWord
 from src.word.domain.stored_word_factory import StoredWordFactory
@@ -47,6 +49,13 @@ class StoredWordMongoRepository(StoredWordRepository):
                 DEPENDENCY_PROBLEM,
                 "Error finding words",
             )
+
+    async def find_words(
+        self,
+        limit: Limit,
+        offset: Offset,
+    ) -> List[StoredWord]:
+        return []
 
     async def save(
         self,
