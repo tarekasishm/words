@@ -2,8 +2,8 @@ from collections import Counter
 
 from src.word.domain.stored_word import StoredWord
 
-class AnagramValidator:
 
+class AnagramValidator:
     @classmethod
     def is_anagram(
         cls,

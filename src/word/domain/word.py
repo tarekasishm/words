@@ -5,6 +5,7 @@ import re
 from src.shared.domain.domain_exceptions import DomainException
 from src.shared.domain.exceptions import INVALID_FIELD
 
+
 @dataclass(frozen=True)
 class Word:
     word: str

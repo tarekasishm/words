@@ -16,7 +16,9 @@ mongo_client: AsyncIOMotorClient = AsyncIOMotorClient(
 
 async def get_mongo_client() -> AsyncGenerator[AsyncIOMotorClientSession, None]:
     try:
-        db_session: Optional[AsyncIOMotorClientSession] = await mongo_client.start_session()
+        db_session: Optional[
+            AsyncIOMotorClientSession
+        ] = await mongo_client.start_session()
         yield db_session
     except:
         db_session = None

@@ -5,6 +5,7 @@ from collections import Counter
 from src.word.domain.position import Position
 from src.word.domain.word import Word
 
+
 @dataclass
 class StoredWord:
     def __init__(

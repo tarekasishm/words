@@ -19,8 +19,8 @@ from src.shared.settings import Settings
 
 import asyncio
 
+
 class StoredWordMongoRepository(StoredWordRepository):
-    
     def __init__(
         self,
         db_session: AsyncIOMotorClientSession,
@@ -39,7 +39,7 @@ class StoredWordMongoRepository(StoredWordRepository):
             stored_word_dict: Dict[str, Any] = await self.__session.client[
                 self.__words_database
             ][self.__words_collection].find_one(
-                {"_id": word.word}, session = self.__session
+                {"_id": word.word}, session=self.__session
             )
             if stored_word_dict:
                 stored_word = StoredWordFactory.build(
@@ -73,54 +73,52 @@ class StoredWordMongoRepository(StoredWordRepository):
             last_position = Position(last_stored_word["position"])
             last_word = Word(last_stored_word["_id"])
 
-        #select for update
-        if last_word: 
-            await self.__session.client[self.__words_database][ 
+        # select for update
+        if last_word:
+            await self.__session.client[self.__words_database][
                 self.__words_collection
             ].find_one_and_update(
                 {
                     "_id": last_word.word,
                 },
-                {
-                    "$set": {"Lock": ObjectId()}
-                },
+                {"$set": {"Lock": ObjectId()}},
                 session=self.__session,
             )
         inserted_position: Position = Position(stored_word.position)
         if last_position is None:
             inserted_position = Position(1)
         if last_position and inserted_position > last_position:
-            inserted_position = Position(last_position.position + 1) 
-        
-        await self.__session.client[
-            self.__words_database
-        ][self.__words_collection].insert_one(
+            inserted_position = Position(last_position.position + 1)
+
+        await self.__session.client[self.__words_database][
+            self.__words_collection
+        ].insert_one(
             {"_id": stored_word.word, "position": inserted_position.position},
-            session = self.__session
+            session=self.__session,
         )
         if last_position and last_position > inserted_position:
-            await self.__session.client[
-                self.__words_database
-            ][self.__words_collection].update_many(
+            await self.__session.client[self.__words_database][
+                self.__words_collection
+            ].update_many(
                 {
                     "position": {"$gte": inserted_position.position},
-                    "_id": {"$ne": stored_word.word}
+                    "_id": {"$ne": stored_word.word},
                 },
-                {
-                    "$inc": {"position": 1}
-                },
+                {"$inc": {"position": 1}},
                 session=self.__session,
             )
         return StoredWordFactory.build(stored_word.word, inserted_position.position)
 
     async def _run_transaction_with_retry(
-        self, 
+        self,
         txn_coro: Callable[[StoredWord], Coroutine[Any, Any, StoredWord]],
-        stored_word: StoredWord
+        stored_word: StoredWord,
     ) -> StoredWord:
         while True:
             try:
-                real_stored_word: StoredWord =  await txn_coro(stored_word)  # performs transaction
+                real_stored_word: StoredWord = await txn_coro(
+                    stored_word
+                )  # performs transaction
                 return real_stored_word
             except (ConnectionFailure, OperationFailure) as exc:
 
@@ -130,11 +128,11 @@ class StoredWordMongoRepository(StoredWordRepository):
                 raise DomainException(
                     "StoredWordRepository",
                     DEPENDENCY_PROBLEM,
-                    "Service not available. Please try later."
+                    "Service not available. Please try later.",
                 )
             except Exception:
                 raise DomainException(
                     "StoredWordRepository",
                     DEPENDENCY_PROBLEM,
-                    "Service not available. Please try later."
+                    "Service not available. Please try later.",
                 )

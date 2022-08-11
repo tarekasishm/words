@@ -7,6 +7,7 @@ from pydantic.dataclasses import dataclass
 from src.shared.domain.domain_exceptions import DomainException
 from src.shared.domain.exceptions import CONFLICT, INVALID_FIELD
 
+
 @dataclass(frozen=True)
 class Position:
     position: int
@@ -18,9 +19,7 @@ class Position:
     ) -> int:
         if position < 1:
             raise DomainException(
-                "Position",
-                INVALID_FIELD,
-                "Position must be a positive integer"
+                "Position", INVALID_FIELD, "Position must be a positive integer"
             )
         return position
 
@@ -34,4 +33,4 @@ class Position:
                 INVALID_FIELD,
                 "Position cannot be compared",
             )
-        return self.position < other.position 
+        return self.position < other.position

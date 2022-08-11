@@ -7,6 +7,7 @@ from src.word.domain.stored_word_repository import StoredWordRepository
 from src.word.domain.word import Word
 from src.word.domain.word_finder import WordFinder
 
+
 class CreateWordUseCase:
     def __init__(
         self,

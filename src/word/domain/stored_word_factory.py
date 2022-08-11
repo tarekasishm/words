@@ -2,8 +2,8 @@ from src.word.domain.position import Position
 from src.word.domain.stored_word import StoredWord
 from src.word.domain.word import Word
 
-class StoredWordFactory:
 
+class StoredWordFactory:
     @classmethod
     def build(
         cls,

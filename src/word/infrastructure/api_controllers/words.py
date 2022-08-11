@@ -9,7 +9,7 @@ from src.shared.application.application_exceptions import (
     ApplicationException,
 )
 from src.shared.infrastructure.api_controllers.json_exceptions.json_response_builder import (
-    JsonResponseBuilder
+    JsonResponseBuilder,
 )
 from src.shared.infrastructure.persistance.mongo_client import get_mongo_client
 from src.word.application.create_word_use_case import CreateWordUseCase
@@ -32,8 +32,8 @@ async def get_words_controller(
     mongo_client: AsyncIOMotorClientSession = Depends(get_mongo_client),
 ) -> Union[StoredWordDto, JSONResponse]:
     try:
-        stored_word_mongo_repository: StoredWordMongoRepository = StoredWordMongoRepository(
-            mongo_client
+        stored_word_mongo_repository: StoredWordMongoRepository = (
+            StoredWordMongoRepository(mongo_client)
         )
         create_word_use_case: CreateWordUseCase = CreateWordUseCase(
             stored_word_mongo_repository,

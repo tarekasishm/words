@@ -10,6 +10,7 @@ from src.shared.domain.exceptions import (
     NOT_ACCEPTABLE,
 )
 
+
 class JsonResponseBuilder:
     ERROR_CODES: Dict[str, int] = {
         INVALID_FIELD: 403,
@@ -18,6 +19,7 @@ class JsonResponseBuilder:
         CONFLICT: 409,
         NOT_ACCEPTABLE: 406,
     }
+
     @classmethod
     async def build_json_response(
         cls,

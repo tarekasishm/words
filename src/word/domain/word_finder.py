@@ -6,6 +6,7 @@ from src.word.domain.word import Word
 from src.shared.domain.domain_exceptions import DomainException
 from src.shared.domain.exceptions import CONFLICT
 
+
 class WordFinder:
     def __init__(
         self,
@@ -21,9 +22,4 @@ class WordFinder:
             word,
         )
         if stored_word is not None:
-            raise DomainException(
-                "WordFinder",
-                CONFLICT,
-                f"{word.word} already exists"
-            )
-    
+            raise DomainException("WordFinder", CONFLICT, f"{word.word} already exists")
