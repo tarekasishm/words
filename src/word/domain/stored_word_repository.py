@@ -28,7 +28,6 @@ class StoredWordRepository(metaclass=abc.ABCMeta):
     async def update(
         self,
         stored_word: StoredWord,
-        new_position: Position,
     ) -> StoredWord:
         raise NotImplementedError
 

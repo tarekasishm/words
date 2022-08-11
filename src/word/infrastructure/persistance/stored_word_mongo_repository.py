@@ -12,7 +12,7 @@ from src.word.domain.stored_word_factory import StoredWordFactory
 from src.word.domain.stored_word_repository import StoredWordRepository
 from src.word.domain.word import Word
 from src.shared.domain.domain_exceptions import DomainException
-from src.shared.domain.exceptions import DEPENDENCY_PROBLEM
+from src.shared.domain.exceptions import DEPENDENCY_PROBLEM, NOT_FOUND
 from src.shared.settings import Settings
 
 
@@ -94,9 +94,48 @@ class StoredWordMongoRepository(StoredWordRepository):
     async def update(
         self,
         stored_word: StoredWord,
-        new_position: Position,
     ) -> StoredWord:
-        pass
+        async with self.__session.start_transaction():
+            return await self._run_transaction_with_retry(self._update, stored_word)
+
+    async def _update(
+        self,
+        new_stored_word: StoredWord,
+    ) -> StoredWord:
+        # ToDo: check returned values
+        current_word: Optional[StoredWord] = await self.find(Word(new_stored_word.word))
+        if current_word is None:
+            raise DomainException(
+                "StoredWordMongoRepostiory",
+                NOT_FOUND,
+                f"{new_stored_word.word} not found",
+            )
+        if current_word == new_stored_word:
+            return current_word
+        inserted_position: Position = await self._select_for_update_last_word(new_stored_word)
+        query: Dict[str, Any] = {"position": {"$gt": current_word.position, "$lte": inserted_position.position}}
+        update: Dict[str, Any] = {"$inc": {"position": -1}}
+        if inserted_position.position < current_word.position:
+            query = {"position": {"$gte": inserted_position.position, "$lte": current_word.position}}
+            update = {"$inc": {"position": 1}}     
+        await self.__session.client[self.__words_database][
+            self.__words_collection
+        ].update_many(
+            query, update,
+            session=self.__session
+        )
+        await self.__session.client[self.__words_database][
+            self.__words_collection
+        ].update_one(
+            {
+                "_id": new_stored_word.word
+            },
+            {
+                "$set": {"position": inserted_position.position}
+            }, 
+            session=self.__session
+        )
+        return StoredWordFactory.build(new_stored_word.word, inserted_position.position)
 
     async def _save(
         self,
@@ -153,7 +192,7 @@ class StoredWordMongoRepository(StoredWordRepository):
         while True:
             try:
                 real_stored_word: StoredWord = await txn_coro(
-                    stored_word
+                    stored_word,
                 )  # performs transaction
                 return real_stored_word
             except (ConnectionFailure, OperationFailure) as exc:
@@ -177,3 +216,33 @@ class StoredWordMongoRepository(StoredWordRepository):
                     DEPENDENCY_PROBLEM,
                     "Service not available. Please try later.",
                 )
+
+    async def _select_for_update_last_word(
+        self,
+        stored_word: StoredWord,
+    ) -> Position:
+        last_position: Optional[Position] = None
+        last_word: Optional[Word] = None
+        async for last_stored_word in self.__session.client[self.__words_database][
+            self.__words_collection
+        ].find({}, session=self.__session).sort("position", -1).limit(1):
+            last_position = Position(last_stored_word["position"])
+            last_word = Word(last_stored_word["_id"])
+
+        # select for update
+        if last_word:
+            await self.__session.client[self.__words_database][
+                self.__words_collection
+            ].find_one_and_update(
+                {
+                    "_id": last_word.word,
+                },
+                {"$set": {"Lock": ObjectId()}},
+                session=self.__session,
+            )
+        inserted_position: Position = Position(stored_word.position)
+        if last_position is None:
+            inserted_position = Position(1)
+        if last_position and inserted_position > last_position:
+            inserted_position = Position(last_position.position + 1)
+        return inserted_position

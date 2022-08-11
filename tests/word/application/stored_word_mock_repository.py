@@ -48,9 +48,5 @@ class StoredWordMockRepository(StoredWordRepository):
     async def update(
         self,
         stored_word: StoredWord,
-        new_position: Position,
     ) -> StoredWord:
-        return StoredWordFactory.build(
-            stored_word.word,
-            new_position.position,
-        )
+        return stored_word
