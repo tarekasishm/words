@@ -55,7 +55,34 @@ class StoredWordMongoRepository(StoredWordRepository):
         limit: Limit,
         offset: Offset,
     ) -> List[StoredWord]:
-        return []
+        try:
+            stored_words: List[StoredWord] = []
+            async for word in self.__session.client[self.__words_database][
+                self.__words_collection
+            ].find(
+                {
+                    "position": {
+                        "$gte": offset.offset,
+                        "$lt": offset.offset + limit.limit,
+                    }
+                },
+                session=self.__session,
+            ).sort(
+                "position", 1
+            ):
+                stored_words.append(
+                    StoredWordFactory.build(
+                        word["_id"],
+                        word["position"],
+                    )
+                )
+            return stored_words
+        except Exception:
+            raise DomainException(
+                "StoredWordRepository",
+                DEPENDENCY_PROBLEM,
+                "Error finding words",
+            )
 
     async def save(
         self,
@@ -124,6 +151,7 @@ class StoredWordMongoRepository(StoredWordRepository):
                 return real_stored_word
             except (ConnectionFailure, OperationFailure) as exc:
                 import traceback
+
                 traceback.print_exc()
                 # If transient error, retry the whole transaction
                 if exc.has_error_label("TransientTransactionError"):
@@ -135,6 +163,7 @@ class StoredWordMongoRepository(StoredWordRepository):
                 )
             except Exception:
                 import traceback
+
                 traceback.print_exc()
                 raise DomainException(
                     "StoredWordRepository",
