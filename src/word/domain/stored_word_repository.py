@@ -16,5 +16,5 @@ class StoredWordRepository(metaclass=abc.ABCMeta):
     async def save(
         self,
         stored_word: StoredWord,
-    ) -> None:
+    ) -> StoredWord:
         raise NotImplementedError

@@ -24,5 +24,5 @@ class StoredWordMockRepository(StoredWordRepository):
     async def save(
         self,
         stored_word: StoredWord,
-    ) -> None:
-        pass
+    ) -> StoredWord:
+        return stored_word
