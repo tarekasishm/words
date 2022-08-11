@@ -1,4 +1,5 @@
 from typing import Union
+from urllib import response
 
 from fastapi import APIRouter, Depends, Query
 from fastapi.responses import JSONResponse
@@ -14,7 +15,9 @@ from src.shared.infrastructure.persistance.mongo_client import get_mongo_client
 from src.word.application.create_word_use_case import CreateWordUseCase
 from src.word.application.get_words_use_case import GetWordsUseCase
 from src.word.application.stored_word_dto import StoredWordDto
+from src.word.application.update_word_use_case import UpdateWordUseCase
 from src.word.application.words_dto import WordsDto
+from src.word.application.word_position_dto import WordPositionDto
 from src.word.infrastructure.persistance.stored_word_mongo_repository import (
     StoredWordMongoRepository,
 )
@@ -67,6 +70,32 @@ async def get_words_controller(
             stored_word_mongo_repository,
         )
         return await get_words_use_case.get_words(limit, offset)
+    except ApplicationException as application_exception:
+        json_response: JSONResponse = await JsonResponseBuilder.build_json_response(
+            application_exception.standard_exception,
+            application_exception.exception_message,
+        )
+        return json_response
+
+@router.patch(
+    "{word}",
+    response_model=StoredWordDto,
+    description="Update position of an already stored word",
+)
+async def udpate_word_controller(
+    word: str,
+    word_position: WordPositionDto,
+    mongo_client: AsyncIOMotorClientSession = Depends(get_mongo_client),
+) -> Union[StoredWordDto, JSONResponse]:
+    try:
+        stored_word_mongo_repository: StoredWordMongoRepository = (
+            StoredWordMongoRepository(mongo_client)
+        )
+        update_word_use_case: UpdateWordUseCase = UpdateWordUseCase(
+            stored_word_mongo_repository,
+        )
+
+        return await update_word_use_case.update(word, word_position.position)
     except ApplicationException as application_exception:
         json_response: JSONResponse = await JsonResponseBuilder.build_json_response(
             application_exception.standard_exception,

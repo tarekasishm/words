@@ -4,6 +4,7 @@ from src.shared.application.application_exceptions import (
     ApplicationException,
 )
 from src.shared.domain.domain_exceptions import DomainException
+from ..domain.stored_word_factory import StoredWordFactory
 from ..domain.position import Position
 from ...shared.domain.exceptions import NOT_FOUND
 from src.word.application.stored_word_dto import StoredWordDto
@@ -34,10 +35,9 @@ class UpdateWordUseCase:
                     NOT_FOUND,
                     f"{word_vo.word} not found",
                 )
-            new_position_vo: Position = Position(new_position)
-            updated_word: StoredWord = await self.__stored_word_repository.update(
-                current_stored_word,
-                new_position_vo
+            updated_word: StoredWord = StoredWordFactory.build(word_vo.word, new_position)
+            updated_word = await self.__stored_word_repository.update(
+                updated_word,
             )
             return StoredWordDto(
                 word=updated_word.word,

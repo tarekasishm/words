@@ -1,4 +1,4 @@
 from pydantic import BaseModel
 
-class WordPositionDto:
+class WordPositionDto(BaseModel):
     position: int
