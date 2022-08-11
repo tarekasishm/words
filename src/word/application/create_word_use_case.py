@@ -27,12 +27,12 @@ class CreateWordUseCase:
             word_finder: WordFinder = WordFinder(self.__stored_word_repository)
             await word_finder.find(Word(stored_word.word))
 
-            await self.__stored_word_repository.save(
+            real_stored_word: StoredWord = await self.__stored_word_repository.save(
                 stored_word,
             )
             return StoredWordDto(
-                word=stored_word.word,
-                position=stored_word.position,
+                word=real_stored_word.word,
+                position=real_stored_word.position,
             )
 
         except DomainException as domain_exception:
