@@ -33,3 +33,15 @@ class Position:
                 "Position cannot be compared",
             )
         return self.position < other.position
+
+    def __le__(
+        self,
+        other: Position,
+    ) -> bool:
+        if not isinstance(other, Position):
+            raise DomainException(
+                "Position",
+                INVALID_FIELD,
+                "Position cannot be compared",
+            )
+        return self.position <= other.position

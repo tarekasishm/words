@@ -92,14 +92,13 @@ class StoredWordMongoRepository(StoredWordRepository):
             inserted_position = Position(1)
         if last_position and inserted_position > last_position:
             inserted_position = Position(last_position.position + 1)
-
         await self.__session.client[self.__words_database][
             self.__words_collection
         ].insert_one(
             {"_id": stored_word.word, "position": inserted_position.position},
             session=self.__session,
         )
-        if last_position and last_position > inserted_position:
+        if last_position and inserted_position <= last_position:
             await self.__session.client[self.__words_database][
                 self.__words_collection
             ].update_many(
@@ -124,7 +123,8 @@ class StoredWordMongoRepository(StoredWordRepository):
                 )  # performs transaction
                 return real_stored_word
             except (ConnectionFailure, OperationFailure) as exc:
-
+                import traceback
+                traceback.print_exc()
                 # If transient error, retry the whole transaction
                 if exc.has_error_label("TransientTransactionError"):
                     continue
@@ -134,6 +134,8 @@ class StoredWordMongoRepository(StoredWordRepository):
                     "Service not available. Please try later.",
                 )
             except Exception:
+                import traceback
+                traceback.print_exc()
                 raise DomainException(
                     "StoredWordRepository",
                     DEPENDENCY_PROBLEM,
