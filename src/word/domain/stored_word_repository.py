@@ -25,6 +25,13 @@ class StoredWordRepository(metaclass=abc.ABCMeta):
         raise NotImplementedError
 
     @abc.abstractmethod
+    async def find_anagrams(
+        self,
+        word: Word,
+    ) -> List[StoredWord]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
     async def update(
         self,
         stored_word: StoredWord,

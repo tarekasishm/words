@@ -18,6 +18,7 @@ class Word:
         # electroencefalografista is longest word (23) in spanish
         pattern: str = r"^[a-zá-úüA-ZÁ-ÚÜ]{1,23}$"
         if not re.match(pattern, word):
+            print(word)
             raise DomainException(
                 "word",
                 INVALID_FIELD,

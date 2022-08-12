@@ -8,6 +8,7 @@ from bson.objectid import ObjectId
 
 from src.shared.domain.limit import Limit
 from src.shared.domain.offset import Offset
+from src.word.domain.anagram_validator import AnagramValidator
 from src.word.domain.position import Position
 from src.word.domain.stored_word import StoredWord
 from src.word.domain.stored_word_factory import StoredWordFactory
@@ -121,6 +122,30 @@ class StoredWordMongoRepository(StoredWordRepository):
                 "StoredWordRepository",
                 DEPENDENCY_PROBLEM,
                 "Error deleting words",
+            )
+
+    async def find_anagrams(
+        self,
+        word: Word,
+    ) -> List[StoredWord]:
+        try:
+            anagrams: List[StoredWord] = []
+            async for stored_word_dict in self.__session.client[ 
+                self.__words_database
+            ][self.__words_collection].find({}, session=self.__session):
+                if AnagramValidator.is_anagram(word, Word(stored_word_dict["_id"])):
+                    anagrams.append(
+                        StoredWordFactory.build(
+                            stored_word_dict["_id"],
+                            stored_word_dict["position"],
+                        )
+                    )
+            return anagrams
+        except DomainException as domain_exception:
+            raise DomainException(
+                domain_exception.domain_artifact,
+                domain_exception.standard_exception,
+                domain_exception.exception_message,
             )
 
     async def _delete(

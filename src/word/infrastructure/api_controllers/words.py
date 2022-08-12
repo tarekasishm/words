@@ -13,6 +13,7 @@ from src.shared.infrastructure.api_controllers.json_exceptions.json_response_bui
 )
 from src.shared.infrastructure.persistance.mongo_client import MongoClient
 from src.word.application.create_word_use_case import CreateWordUseCase
+from ...application.get_anagrams_use_case import GetAnagramsUseCase
 from ...application.delete_word_use_case import DeleteWordUseCase
 from src.word.application.get_words_use_case import GetWordsUseCase
 from src.word.application.stored_word_dto import StoredWordDto
@@ -124,6 +125,31 @@ async def delete_word_controller(
             stored_word_mongo_repository,
         )
         return await delete_word_use_case.delete(word)
+    except ApplicationException as application_exception:
+        json_response: JSONResponse = await JsonResponseBuilder.build_json_response(
+            application_exception.standard_exception,
+            application_exception.exception_message,
+        )
+        return json_response
+
+@router.get(
+    "/{word}/anagrams",
+    response_model=WordsDto,
+    status_code=200,
+    description="Get anagrams",
+)
+async def get_anagrams_controller(
+    word: str,
+    mongo_client: AsyncIOMotorClientSession = Depends(MongoClient.get_session),
+) -> Union[WordsDto, JSONResponse]:
+    try:
+        stored_word_mongo_repository: StoredWordMongoRepository = (
+            StoredWordMongoRepository(mongo_client)
+        )
+        get_anagrams_use_case: GetAnagramsUseCase = GetAnagramsUseCase(
+            stored_word_mongo_repository,
+        )
+        return await get_anagrams_use_case.get(word)
     except ApplicationException as application_exception:
         json_response: JSONResponse = await JsonResponseBuilder.build_json_response(
             application_exception.standard_exception,

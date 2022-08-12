@@ -1,14 +1,14 @@
 from collections import Counter
 
-from src.word.domain.stored_word import StoredWord
+from src.word.domain.word import Word
 
 
 class AnagramValidator:
     @classmethod
     def is_anagram(
         cls,
-        left_word: StoredWord,
-        right_word: StoredWord,
+        left_word: Word,
+        right_word: Word,
     ) -> bool:
         self_frequency: Counter[str] = Counter(left_word.word)
         other_frequency: Counter[str] = Counter(right_word.word)
