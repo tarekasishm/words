@@ -18,6 +18,6 @@ class Limit:
             raise DomainException(
                 "Limit",
                 INVALID_FIELD,
-                "Limit must a positive integer",
+                "Limit must be a positive integer",
             )
         return limit

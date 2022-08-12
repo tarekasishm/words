@@ -18,6 +18,6 @@ class Offset:
             raise DomainException(
                 "Offset",
                 INVALID_FIELD,
-                "Offset must greater than or equal to zero",
+                "Offset must be greater than or equal to zero",
             )
         return offset
