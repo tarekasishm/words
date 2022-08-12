@@ -1,7 +1,9 @@
+from telnetlib import DO
 from typing import Any, Callable, Coroutine, Dict, List, Optional
 
 from motor.motor_asyncio import AsyncIOMotorClientSession
 from pymongo.errors import ConnectionFailure, OperationFailure
+from pymongo.results import DeleteResult
 from bson.objectid import ObjectId
 
 from src.shared.domain.limit import Limit
@@ -62,8 +64,8 @@ class StoredWordMongoRepository(StoredWordRepository):
             ].find(
                 {
                     "position": {
-                        "$gte": offset.offset,
-                        "$lt": offset.offset + limit.limit,
+                        "$gt": offset.offset,
+                        "$lte": offset.offset + limit.limit,
                     }
                 },
                 session=self.__session,
@@ -78,6 +80,8 @@ class StoredWordMongoRepository(StoredWordRepository):
                 )
             return stored_words
         except Exception:
+            import traceback
+            traceback.print_exc()
             raise DomainException(
                 "StoredWordRepository",
                 DEPENDENCY_PROBLEM,
@@ -97,6 +101,62 @@ class StoredWordMongoRepository(StoredWordRepository):
     ) -> StoredWord:
         async with self.__session.start_transaction():
             return await self._run_transaction_with_retry(self._update, stored_word)
+    
+    async def delete(
+        self,
+        word: Word,
+    ) -> None:
+        try:
+            current_word: Optional[StoredWord] = await self.find(word)
+            if current_word is None:
+                raise DomainException(
+                    "StoredWordMongoRepository",
+                    NOT_FOUND,
+                    f"{word.word} not found",
+                )
+            async with self.__session.start_transaction():
+                await self._run_transaction_with_retry(self._delete, current_word)
+        except DomainException as domain_exception:
+            raise domain_exception
+        except Exception:
+            raise DomainException(
+                "StoredWordRepository",
+                DEPENDENCY_PROBLEM,
+                "Error deleting words",
+            )
+
+    async def _delete(
+        self,
+        current_word: StoredWord,
+    ) -> StoredWord:
+        try:
+            
+            delete_result: DeleteResult = await self.__session.client[
+                self.__words_database
+            ][self.__words_collection].delete_one(
+                {"_id": current_word.word},
+                session=self.__session
+            )
+            if delete_result.deleted_count != 1:
+                raise DomainException(
+                    "StoredWordMongoRepository",
+                    DEPENDENCY_PROBLEM,
+                    f"{current_word.word} could not be deleted",
+                )
+            await self.__session.client[
+                self.__words_database
+            ][self.__words_collection].update_many(
+                {"position": {"$gt": current_word.position}},
+                {"$inc": {"position": -1}},
+                session=self.__session,
+            )
+            return current_word
+        except Exception:
+            raise DomainException(
+                "StoredWordRepository",
+                DEPENDENCY_PROBLEM,
+                "Error deleting words",
+            )
 
     async def _update(
         self,

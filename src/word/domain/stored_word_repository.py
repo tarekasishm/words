@@ -37,3 +37,10 @@ class StoredWordRepository(metaclass=abc.ABCMeta):
         stored_word: StoredWord,
     ) -> StoredWord:
         raise NotImplementedError
+
+    @abc.abstractmethod
+    async def delete(
+        self,
+        word: Word,
+    ) -> None:
+        raise NotImplementedError
