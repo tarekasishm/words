@@ -16,7 +16,7 @@ class Word:
         word: str,
     ) -> str:
         # electroencefalografista is longest word (23) in spanish
-        pattern: str = r"^[a-z]{1,23}$"
+        pattern: str = r"^[a-zá-úüA-ZÁ-ÚÜ]{1,23}$"
         if not re.match(pattern, word):
             raise DomainException(
                 "word",
