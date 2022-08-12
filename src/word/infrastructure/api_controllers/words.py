@@ -105,3 +105,26 @@ async def udpate_word_controller(
         )
         return json_response
 
+@router.delete(
+    "/{word}",
+    status_code=204,
+    description="Delete word",
+)
+async def delete_word_controller(
+    word: str,
+    mongo_client: AsyncIOMotorClientSession = Depends(MongoClient.get_session),
+) -> Union[None, JSONResponse]:
+    try:
+        stored_word_mongo_repository: StoredWordMongoRepository = (
+            StoredWordMongoRepository(mongo_client)
+        )
+        delete_word_use_case: DeleteWordUseCase = DeleteWordUseCase(
+            stored_word_mongo_repository,
+        )
+        return await delete_word_use_case.delete(word)
+    except ApplicationException as application_exception:
+        json_response: JSONResponse = await JsonResponseBuilder.build_json_response(
+            application_exception.standard_exception,
+            application_exception.exception_message,
+        )
+        return json_response
