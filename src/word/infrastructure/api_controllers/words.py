@@ -11,8 +11,9 @@ from src.shared.application.application_exceptions import (
 from src.shared.infrastructure.api_controllers.json_exceptions.json_response_builder import (
     JsonResponseBuilder,
 )
-from src.shared.infrastructure.persistance.mongo_client import get_mongo_client
+from src.shared.infrastructure.persistance.mongo_client import MongoClient
 from src.word.application.create_word_use_case import CreateWordUseCase
+from ...application.delete_word_use_case import DeleteWordUseCase
 from src.word.application.get_words_use_case import GetWordsUseCase
 from src.word.application.stored_word_dto import StoredWordDto
 from src.word.application.update_word_use_case import UpdateWordUseCase
@@ -33,7 +34,7 @@ router = APIRouter()
 )
 async def set_words_controller(
     create_word_dto: StoredWordDto,
-    mongo_client: AsyncIOMotorClientSession = Depends(get_mongo_client),
+    mongo_client: AsyncIOMotorClientSession = Depends(MongoClient.get_session),
 ) -> Union[StoredWordDto, JSONResponse]:
     try:
         stored_word_mongo_repository: StoredWordMongoRepository = (
@@ -60,7 +61,7 @@ async def set_words_controller(
 async def get_words_controller(
     limit: int = Query(10),
     offset: int = Query(0),
-    mongo_client: AsyncIOMotorClientSession = Depends(get_mongo_client),
+    mongo_client: AsyncIOMotorClientSession = Depends(MongoClient.get_session),
 ) -> Union[WordsDto, JSONResponse]:
     try:
         stored_word_mongo_repository: StoredWordMongoRepository = (
@@ -78,14 +79,15 @@ async def get_words_controller(
         return json_response
 
 @router.patch(
-    "{word}",
+    "/{word}",
     response_model=StoredWordDto,
+    status_code=200,
     description="Update position of an already stored word",
 )
 async def udpate_word_controller(
     word: str,
     word_position: WordPositionDto,
-    mongo_client: AsyncIOMotorClientSession = Depends(get_mongo_client),
+    mongo_client: AsyncIOMotorClientSession = Depends(MongoClient.get_session),
 ) -> Union[StoredWordDto, JSONResponse]:
     try:
         stored_word_mongo_repository: StoredWordMongoRepository = (
@@ -102,3 +104,4 @@ async def udpate_word_controller(
             application_exception.exception_message,
         )
         return json_response
+
