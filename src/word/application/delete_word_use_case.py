@@ -7,6 +7,7 @@ from src.word.domain.stored_word_repository import (
 )
 from ..domain.word import Word
 
+
 class DeleteWordUseCase:
     def __init__(
         self,
@@ -25,4 +26,3 @@ class DeleteWordUseCase:
                 domain_exception.standard_exception,
                 domain_exception.exception_message,
             )
-

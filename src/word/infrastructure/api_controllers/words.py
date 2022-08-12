@@ -78,6 +78,7 @@ async def get_words_controller(
         )
         return json_response
 
+
 @router.patch(
     "/{word}",
     response_model=StoredWordDto,
@@ -104,6 +105,7 @@ async def udpate_word_controller(
             application_exception.exception_message,
         )
         return json_response
+
 
 @router.delete(
     "/{word}",

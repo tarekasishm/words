@@ -80,8 +80,6 @@ class StoredWordMongoRepository(StoredWordRepository):
                 )
             return stored_words
         except Exception:
-            import traceback
-            traceback.print_exc()
             raise DomainException(
                 "StoredWordRepository",
                 DEPENDENCY_PROBLEM,
@@ -101,7 +99,7 @@ class StoredWordMongoRepository(StoredWordRepository):
     ) -> StoredWord:
         async with self.__session.start_transaction():
             return await self._run_transaction_with_retry(self._update, stored_word)
-    
+
     async def delete(
         self,
         word: Word,
@@ -130,27 +128,28 @@ class StoredWordMongoRepository(StoredWordRepository):
         current_word: StoredWord,
     ) -> StoredWord:
         try:
-            
+
             delete_result: DeleteResult = await self.__session.client[
                 self.__words_database
             ][self.__words_collection].delete_one(
-                {"_id": current_word.word},
-                session=self.__session
+                {"_id": current_word.word}, session=self.__session
             )
             if delete_result.deleted_count != 1:
                 raise DomainException(
                     "StoredWordMongoRepository",
-                    DEPENDENCY_PROBLEM,
+                    NOT_FOUND,
                     f"{current_word.word} could not be deleted",
                 )
-            await self.__session.client[
-                self.__words_database
-            ][self.__words_collection].update_many(
+            await self.__session.client[self.__words_database][
+                self.__words_collection
+            ].update_many(
                 {"position": {"$gt": current_word.position}},
                 {"$inc": {"position": -1}},
                 session=self.__session,
             )
             return current_word
+        except DomainException as domain_exception:
+            raise domain_exception
         except Exception:
             raise DomainException(
                 "StoredWordRepository",
@@ -172,28 +171,38 @@ class StoredWordMongoRepository(StoredWordRepository):
             )
         if current_word == new_stored_word:
             return current_word
-        inserted_position: Position = await self._select_for_update_last_word(new_stored_word)
-        query: Dict[str, Any] = {"position": {"$gt": current_word.position, "$lte": inserted_position.position}}
+        inserted_position: Position = await self._select_for_update_last_word(
+            new_stored_word
+        )
+        inserted_position = (
+            inserted_position
+            if inserted_position.position == new_stored_word.position
+            else Position(inserted_position.position - 1)
+        )
+        query: Dict[str, Any] = {
+            "position": {
+                "$gt": current_word.position,
+                "$lte": inserted_position.position,
+            }
+        }
         update: Dict[str, Any] = {"$inc": {"position": -1}}
         if inserted_position.position < current_word.position:
-            query = {"position": {"$gte": inserted_position.position, "$lte": current_word.position}}
-            update = {"$inc": {"position": 1}}     
+            query = {
+                "position": {
+                    "$gte": inserted_position.position,
+                    "$lte": current_word.position,
+                }
+            }
+            update = {"$inc": {"position": 1}}
         await self.__session.client[self.__words_database][
             self.__words_collection
-        ].update_many(
-            query, update,
-            session=self.__session
-        )
+        ].update_many(query, update, session=self.__session)
         await self.__session.client[self.__words_database][
             self.__words_collection
         ].update_one(
-            {
-                "_id": new_stored_word.word
-            },
-            {
-                "$set": {"position": inserted_position.position}
-            }, 
-            session=self.__session
+            {"_id": new_stored_word.word},
+            {"$set": {"position": inserted_position.position}},
+            session=self.__session,
         )
         return StoredWordFactory.build(new_stored_word.word, inserted_position.position)
 

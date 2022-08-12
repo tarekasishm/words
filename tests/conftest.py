@@ -12,16 +12,17 @@ from src.shared.settings import Settings
 test_client = TestClient(app)
 
 data_test: List[str] = [
-        "cosa",
-        "caso",
-        "paco",
-        "pepe",
-        "calle",
-        "málaga",
-    ]
+    "cosa",
+    "caso",
+    "paco",
+    "pepe",
+    "calle",
+    "málaga",
+]
 data_dict: List[Dict[str, Any]] = [
     {"_id": data, "position": idx + 1} for idx, data in enumerate(data_test)
-] 
+]
+
 
 @pytest.fixture()
 async def client() -> AsyncGenerator[AsyncClient, None]:
@@ -29,10 +30,11 @@ async def client() -> AsyncGenerator[AsyncClient, None]:
         async with AsyncClient(app=app, base_url="http://test") as ac:
             yield ac
 
+
 @pytest.fixture()
 async def populate_mongo() -> AsyncGenerator[None, None]:
     settings: Dict[str, Any] = Settings().dict()
-    
+
     mongo_client: AsyncIOMotorClient = AsyncIOMotorClient(
         host=settings["mongo_uri"],
         username=settings["mongo_user"],

@@ -1,4 +1,3 @@
-
 from typing import Optional
 from src.shared.application.application_exceptions import (
     ApplicationException,
@@ -27,15 +26,17 @@ class UpdateWordUseCase:
     ) -> StoredWordDto:
         try:
             word_vo: Word = Word(word)
-            current_stored_word: Optional[StoredWord] = await self.__stored_word_repository.find(
-                word_vo
-            )
+            current_stored_word: Optional[
+                StoredWord
+            ] = await self.__stored_word_repository.find(word_vo)
             if current_stored_word is None:
                 raise ApplicationException(
                     NOT_FOUND,
                     f"{word_vo.word} not found",
                 )
-            updated_word: StoredWord = StoredWordFactory.build(word_vo.word, new_position)
+            updated_word: StoredWord = StoredWordFactory.build(
+                word_vo.word, new_position
+            )
             updated_word = await self.__stored_word_repository.update(
                 updated_word,
             )

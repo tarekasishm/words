@@ -10,6 +10,7 @@ tags_metadata: List[Dict[str, Any]] = [
     {"name": "Template API", "description": "API Template"}
 ]
 
+
 async def on_start_up() -> None:
     await MongoClient.get_client()
 

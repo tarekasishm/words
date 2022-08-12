@@ -6,6 +6,7 @@ from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorClientSession
 
 from src.shared.settings import Settings
 
+
 class MongoClient:
     _mongo_client: Optional[AsyncIOMotorClient] = None
     _settings: Dict[str, Any] = Settings().dict()

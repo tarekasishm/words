@@ -10,8 +10,8 @@ from tests.word.application.stored_word_mock_repository import (
     StoredWordMockRepository,
 )
 
-class TestUpdateWordUseCase:
 
+class TestUpdateWordUseCase:
     @pytest.mark.asyncio
     async def test_update_word_success(self) -> None:
         stored_word_repository: StoredWordMockRepository = StoredWordMockRepository()
@@ -24,7 +24,7 @@ class TestUpdateWordUseCase:
             8,
         )
         expected_response: StoredWordDto = StoredWordDto(word="pepe", position=8)
-        
+
         assert response == expected_response
 
     @pytest.mark.asyncio
