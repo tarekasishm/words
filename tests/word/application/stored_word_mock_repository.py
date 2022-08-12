@@ -50,3 +50,9 @@ class StoredWordMockRepository(StoredWordRepository):
         stored_word: StoredWord,
     ) -> StoredWord:
         return stored_word
+
+    async def delete(
+        self,
+        word: Word,
+    ) -> None:
+        pass
