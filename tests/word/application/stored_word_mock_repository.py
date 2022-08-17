@@ -2,7 +2,6 @@ from typing import Any, Dict, List, Optional
 
 from src.shared.domain.limit import Limit
 from src.shared.domain.offset import Offset
-from src.word.domain.position import Position
 from src.word.domain.stored_word import StoredWord
 from src.word.domain.stored_word_factory import StoredWordFactory
 from src.word.domain.stored_word_repository import StoredWordRepository
@@ -55,4 +54,10 @@ class StoredWordMockRepository(StoredWordRepository):
         self,
         word: Word,
     ) -> None:
+        pass
+
+    async def find_anagrams(
+        self,
+        word: Word,
+    ) -> List[StoredWord]:
         pass

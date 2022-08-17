@@ -37,6 +37,8 @@ class MongoClient:
             ] = await cls._mongo_client.start_session()
             yield db_session
         except:
+            import traceback
+            traceback.print_exc()
             db_session = None
             raise HTTPException(503, detail="Service not available, please try later.")
         finally:

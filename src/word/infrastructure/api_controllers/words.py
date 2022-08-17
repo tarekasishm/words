@@ -1,5 +1,4 @@
 from typing import Union
-from urllib import response
 
 from fastapi import APIRouter, Depends, Query
 from fastapi.responses import JSONResponse
@@ -13,8 +12,8 @@ from src.shared.infrastructure.api_controllers.json_exceptions.json_response_bui
 )
 from src.shared.infrastructure.persistance.mongo_client import MongoClient
 from src.word.application.create_word_use_case import CreateWordUseCase
-from ...application.get_anagrams_use_case import GetAnagramsUseCase
-from ...application.delete_word_use_case import DeleteWordUseCase
+from src.word.application.get_anagrams_use_case import GetAnagramsUseCase
+from src.word.application.delete_word_use_case import DeleteWordUseCase
 from src.word.application.get_words_use_case import GetWordsUseCase
 from src.word.application.stored_word_dto import StoredWordDto
 from src.word.application.update_word_use_case import UpdateWordUseCase

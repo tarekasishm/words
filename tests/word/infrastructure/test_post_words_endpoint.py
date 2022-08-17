@@ -59,3 +59,18 @@ class TestPostWordsEndpoint:
         expected_response = data_test
         assert response.status_code == 200
         assert response.json()["data"] == expected_response
+
+    def test_post_two_words(
+        self,
+        populate_mongo: None,
+    ) -> None:
+        post_response = test_client.post(
+            "/api/v1/words", json={"word": "dos palabras", "position": 25}
+        )
+        assert post_response.status_code == 403
+        assert post_response.json()["message"] == f"Word does not follow the pattern"
+        response = test_client.get("/api/v1/words")
+        expected_response = data_test
+        print(response.json())
+        assert response.status_code == 200
+        assert response.json()["data"] == expected_response

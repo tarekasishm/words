@@ -3,13 +3,12 @@ from src.shared.application.application_exceptions import (
     ApplicationException,
 )
 from src.shared.domain.domain_exceptions import DomainException
-from ..domain.stored_word_factory import StoredWordFactory
-from ..domain.position import Position
-from ...shared.domain.exceptions import NOT_FOUND
+from src.word.domain.stored_word_factory import StoredWordFactory
+from src.shared.domain.exceptions import NOT_FOUND
 from src.word.application.stored_word_dto import StoredWordDto
-from ..domain.stored_word import StoredWord
+from src.word.domain.stored_word import StoredWord
 from src.word.domain.stored_word_repository import StoredWordRepository
-from ..domain.word import Word
+from src.word.domain.word import Word
 
 
 class UpdateWordUseCase:

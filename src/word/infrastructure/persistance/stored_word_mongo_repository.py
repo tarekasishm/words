@@ -1,4 +1,3 @@
-from telnetlib import DO
 from typing import Any, Callable, Coroutine, Dict, List, Optional
 
 from motor.motor_asyncio import AsyncIOMotorClientSession

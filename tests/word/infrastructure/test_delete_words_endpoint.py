@@ -1,8 +1,7 @@
-from urllib import response
 from tests.conftest import data_test, test_client
 
 
-class TestDeleteŴordsEndpoint:
+class TestDeleteWordsEndpoint:
     def test_delete_first_word(
         self,
         populate_mongo: None,

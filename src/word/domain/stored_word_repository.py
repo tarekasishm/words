@@ -3,7 +3,6 @@ from typing import List, Optional
 
 from src.shared.domain.offset import Offset
 from src.shared.domain.limit import Limit
-from src.word.domain.position import Position
 from src.word.domain.word import Word
 from src.word.domain.stored_word import StoredWord
 
