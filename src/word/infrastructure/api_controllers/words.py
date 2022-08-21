@@ -131,6 +131,7 @@ async def delete_word_controller(
         )
         return json_response
 
+
 @router.get(
     "/{word}/anagrams",
     response_model=WordsDto,
