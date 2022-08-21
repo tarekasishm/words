@@ -1,3 +1,4 @@
+from collections import Counter
 from typing import Any, Callable, Coroutine, Dict, List, Optional
 
 from motor.motor_asyncio import AsyncIOMotorClientSession
@@ -128,14 +129,16 @@ class StoredWordMongoRepository(StoredWordRepository):
             anagrams: List[StoredWord] = []
             async for stored_word_dict in self.__session.client[self.__words_database][
                 self.__words_collection
-            ].find({}, session=self.__session):
-                if AnagramValidator.is_anagram(word, Word(stored_word_dict["_id"])):
-                    anagrams.append(
-                        StoredWordFactory.build(
-                            stored_word_dict["_id"],
-                            stored_word_dict["position"],
-                        )
+            ].find({
+                "anagram": dict(Counter(sorted(word.word))),
+                "_id": {"$ne": word.word},
+            }, session=self.__session):
+                anagrams.append(
+                    StoredWordFactory.build(
+                        stored_word_dict["_id"],
+                        stored_word_dict["position"]
                     )
+                )
             return anagrams
         except DomainException as domain_exception:
             raise DomainException(
@@ -264,7 +267,11 @@ class StoredWordMongoRepository(StoredWordRepository):
             await self.__session.client[self.__words_database][
                 self.__words_collection
             ].insert_one(
-                {"_id": stored_word.word, "position": inserted_position.position},
+                {
+                    "_id": stored_word.word, 
+                    "position": inserted_position.position,
+                    "anagram": stored_word.anagram,    
+                },
                 session=self.__session,
             )
             if last_position and inserted_position <= last_position:
@@ -285,11 +292,8 @@ class StoredWordMongoRepository(StoredWordRepository):
         txn_coro: Callable[[StoredWord], Coroutine[Any, Any, StoredWord]],
         stored_word: StoredWord,
     ) -> StoredWord:
-        counter: int = 1
         while True:
             try:
-                print(f"iteration {counter}")
-                counter += 1
                 real_stored_word: StoredWord = await txn_coro(
                     stored_word,
                 )  # performs transaction
