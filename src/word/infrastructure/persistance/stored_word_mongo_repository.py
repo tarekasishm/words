@@ -17,8 +17,6 @@ from src.shared.domain.domain_exceptions import DomainException
 from src.shared.domain.exceptions import DEPENDENCY_PROBLEM, NOT_FOUND
 from src.shared.settings import Settings
 
-from time import perf_counter_ns
-
 
 class StoredWordMongoRepository(StoredWordRepository):
     def __init__(
