@@ -1,3 +1,4 @@
+from collections import Counter
 from typing import Any, AsyncGenerator, Dict, List
 
 import pytest
@@ -20,7 +21,7 @@ data_test: List[str] = [
     "málaga",
 ]
 data_dict: List[Dict[str, Any]] = [
-    {"_id": data, "position": idx + 1} for idx, data in enumerate(data_test)
+    {"_id": data, "position": idx + 1, "anagram": dict(Counter(sorted(data)))} for idx, data in enumerate(data_test)
 ]
 
 

@@ -10,10 +10,8 @@ class TestGetAnagramsEndpoint:
         response = test_client.get(f"/api/v1/words/asco/anagrams")
         assert response.status_code == 200
 
-        expected_response: Dict[str, List[str]] = {
-            "data": ["cosa", "caso"]
-        }
-        assert response.json() == expected_response
+        expected_response: Dict[str, List[str]] = {"data": ["cosa", "caso"]}
+        assert sorted(response.json()["data"]) == sorted(expected_response["data"])
 
     def test_not_found_anagrams(
         self,
@@ -22,9 +20,7 @@ class TestGetAnagramsEndpoint:
         response = test_client.get(f"/api/v1/words/carro/anagrams")
         assert response.status_code == 200
 
-        expected_response: Dict[str, List[str]] = {
-            "data": []
-        }
+        expected_response: Dict[str, List[str]] = {"data": []}
         assert response.json() == expected_response
 
     def test_get_anagrams_without_including_same_word(
@@ -34,7 +30,5 @@ class TestGetAnagramsEndpoint:
         response = test_client.get(f"/api/v1/words/cosa/anagrams")
         assert response.status_code == 200
 
-        expected_response: Dict[str, List[str]] = {
-            "data": ["caso"]
-        }
+        expected_response: Dict[str, List[str]] = {"data": ["caso"]}
         assert response.json() == expected_response
