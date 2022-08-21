@@ -26,9 +26,9 @@ class GetAnagramsUseCase:
         word: str,
     ) -> WordsDto:
         try:
-            anagrams: List[StoredWord] = await self.__stored_word_repository.find_anagrams(
-                Word(word)
-            )
+            anagrams: List[
+                StoredWord
+            ] = await self.__stored_word_repository.find_anagrams(Word(word))
 
             anagrams_str: List[str] = [anagram.word for anagram in anagrams]
             return WordsDto(data=anagrams_str)
