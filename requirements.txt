@@ -16,4 +16,4 @@ black==22.3.0
 pylint==2.12.2
 asyncpg==0.25.0
 SQLAlchemy==1.4.35
-motor==2.5.1
+motor==3.0.0
