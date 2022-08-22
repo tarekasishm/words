@@ -61,7 +61,7 @@ Unit and validation tests are provided with the source code. For the unit tests,
 
 and type the following commands in the root folder
 ```
-python3.8 -m venv env
+python3.10 -m venv env
 source env/bin/activate # Linux version
 pip install -r requirements.txt
 pytest
