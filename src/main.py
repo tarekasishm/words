@@ -4,19 +4,20 @@ from fastapi import FastAPI, APIRouter
 from src.shared.infrastructure.persistance.mongo_client import MongoClient
 from src.health_check.infrastructure.api_controllers import health_checks
 from src.word.infrastructure.api_controllers import words
+from src.word.infrastructure.persistance.word_index import create_word_index
 
 API_V: Final[str] = "/api/v1"
 tags_metadata: List[Dict[str, Any]] = [
-    {"name": "Template API", "description": "API Template"}
+    {"name": "WORDS API", "description": "Awesome WORDS API"}
 ]
 
 
 async def on_start_up() -> None:
-    await MongoClient.get_client()
-
+    mongo_client = await MongoClient.get_client()
+    await create_word_index(mongo_client)
 
 app = FastAPI(
-    title="API Template",
+    title="WORDS API",
     openapi_url=f"{API_V}/openapi.json",
     openapi_tags=tags_metadata,
     on_startup=[on_start_up],

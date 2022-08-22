@@ -1,7 +1,12 @@
+import os
+
+import pytest
+
 from tests.conftest import data_test, test_client
 
 
 class TestDeleteWordsEndpoint:
+    @pytest.mark.skipif( not os.getenv("RUN_VALIDATION_TEST", False), reason="Environment not ready" )
     def test_delete_first_word(
         self,
         populate_mongo: None,
@@ -14,6 +19,7 @@ class TestDeleteWordsEndpoint:
         assert get_response.status_code == 200
         assert get_response.json()["data"] == expected_response
 
+    @pytest.mark.skipif( not os.getenv("RUN_VALIDATION_TEST", False), reason="Environment not ready" )
     def test_delete_word_in_the_middle(
         self,
         populate_mongo: None,
@@ -26,6 +32,7 @@ class TestDeleteWordsEndpoint:
         assert get_response.status_code == 200
         assert get_response.json()["data"] == expected_response
 
+    @pytest.mark.skipif( not os.getenv("RUN_VALIDATION_TEST", False), reason="Environment not ready" )
     def test_delete_last_word(
         self,
         populate_mongo: None,
@@ -38,6 +45,7 @@ class TestDeleteWordsEndpoint:
         assert get_response.status_code == 200
         assert get_response.json()["data"] == expected_response
 
+    @pytest.mark.skipif( not os.getenv("RUN_VALIDATION_TEST", False), reason="Environment not ready" )
     def test_delete_non_existing_word(
         self,
         populate_mongo: None,

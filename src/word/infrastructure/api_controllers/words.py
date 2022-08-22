@@ -30,7 +30,8 @@ router = APIRouter()
     "",
     response_model=StoredWordDto,
     status_code=201,
-    description="Store a new word",
+    summary="Store a new word",
+    description="Store a new word in the provided position. You cannot store the same word twice.",
 )
 async def set_words_controller(
     create_word_dto: StoredWordDto,
@@ -56,7 +57,8 @@ async def set_words_controller(
     "",
     response_model=WordsDto,
     status_code=200,
-    description="Get stored words",
+    summary="Get stored words",
+    description="Get stored words providing pagination options like limit and offset",
 )
 async def get_words_controller(
     limit: int = Query(10),
@@ -83,6 +85,7 @@ async def get_words_controller(
     "/{word}",
     response_model=StoredWordDto,
     status_code=200,
+    summary="Update the position of an existing word",
     description="Update position of an already stored word",
 )
 async def udpate_word_controller(
@@ -136,7 +139,8 @@ async def delete_word_controller(
     "/{word}/anagrams",
     response_model=WordsDto,
     status_code=200,
-    description="Get anagrams",
+    summary="Get anagrams",
+    description="Get all the anagrams of the provided word from our stored words.",
 )
 async def get_anagrams_controller(
     word: str,

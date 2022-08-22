@@ -1,7 +1,12 @@
+import os
+
+import pytest
+
 from tests.conftest import data_test, test_client
 
 
 class TestPatchWordsEndpoint:
+    @pytest.mark.skipif( not os.getenv("RUN_VALIDATION_TEST", False), reason="Environment not ready" )
     def test_patch_word_to_higher_position(
         self,
         populate_mongo: None,
@@ -19,6 +24,7 @@ class TestPatchWordsEndpoint:
         assert get_response.status_code == 200
         assert get_response.json()["data"] == expected_response
 
+    @pytest.mark.skipif( not os.getenv("RUN_VALIDATION_TEST", False), reason="Environment not ready" )
     def test_patch_word_to_lower_position(
         self,
         populate_mongo: None,
@@ -36,6 +42,7 @@ class TestPatchWordsEndpoint:
         assert get_response.status_code == 200
         assert get_response.json()["data"] == expected_response
 
+    @pytest.mark.skipif( not os.getenv("RUN_VALIDATION_TEST", False), reason="Environment not ready" )
     def test_patch_word_to_out_of_range_position(
         self,
         populate_mongo: None,
@@ -51,6 +58,7 @@ class TestPatchWordsEndpoint:
         assert get_response.status_code == 200
         assert get_response.json()["data"] == expected_response
 
+    @pytest.mark.skipif( not os.getenv("RUN_VALIDATION_TEST", False), reason="Environment not ready" )
     def test_patch_non_exising_word(
         self,
         populate_mongo: None,

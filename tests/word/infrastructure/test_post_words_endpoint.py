@@ -1,7 +1,12 @@
+import os
+
+import pytest
+
 from tests.conftest import data_test, test_client
 
 
 class TestPostWordsEndpoint:
+    @pytest.mark.skipif( not os.getenv("RUN_VALIDATION_TEST", False), reason="Environment not ready" )
     def test_post_word_at_beggining(self, populate_mongo: None) -> None:
         post_response = test_client.post(
             "/api/v1/words", json={"word": "botella", "position": 1}
@@ -15,6 +20,7 @@ class TestPostWordsEndpoint:
         assert response.status_code == 200
         assert response.json()["data"] == expected_response
 
+    @pytest.mark.skipif( not os.getenv("RUN_VALIDATION_TEST", False), reason="Environment not ready" )
     def test_post_word_in_the_middle(
         self,
         populate_mongo: None,
@@ -29,6 +35,7 @@ class TestPostWordsEndpoint:
         assert response.status_code == 200
         assert response.json()["data"] == expected_response
 
+    @pytest.mark.skipif( not os.getenv("RUN_VALIDATION_TEST", False), reason="Environment not ready" )
     def test_post_word_out_of_the_range(
         self,
         populate_mongo: None,
@@ -46,6 +53,7 @@ class TestPostWordsEndpoint:
         assert response.status_code == 200
         assert response.json()["data"] == expected_response
 
+    @pytest.mark.skipif( not os.getenv("RUN_VALIDATION_TEST", False), reason="Environment not ready" )
     def test_post_already_existing_word(
         self,
         populate_mongo: None,
@@ -60,6 +68,7 @@ class TestPostWordsEndpoint:
         assert response.status_code == 200
         assert response.json()["data"] == expected_response
 
+    @pytest.mark.skipif( not os.getenv("RUN_VALIDATION_TEST", False), reason="Environment not ready" )
     def test_post_two_words(
         self,
         populate_mongo: None,
